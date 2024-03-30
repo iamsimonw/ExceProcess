@@ -8,16 +8,32 @@ def copy_csv_to_excel(csv_filenames, excel_file, csv_directory):
 
     # 创建 Excel 写入器对象
     excel_file_path = os.path.join(csv_directory, excel_file)
-    with pd.ExcelWriter(excel_file_path, engine='xlsxwriter') as writer:
-        # 遍历每个 CSV 文件
-        for csv_filename in csv_filenames:
-            csv_file = os.path.join(csv_directory, csv_filename)
-            # 从文件名中提取工作表名称
-            sheet_name = os.path.splitext(csv_filename)[0]
-            # 读取 CSV 文件到 DataFrame
-            df = pd.read_csv(csv_file)
-            # 将 DataFrame 写入到 Excel 文件的对应工作表
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+    # 遍历每个 CSV 文件
+    for csv_filename in csv_filenames:
+        csv_file = os.path.join(csv_directory, csv_filename)
+        # 从文件名中提取工作表名称
+        sheet_name = os.path.splitext(csv_filename)[0]
+
+        # 读取 CSV 文件到 DataFrame，跳过第一行
+        df = pd.read_csv(csv_file, skiprows=1)
+        
+        # 如果 Excel 文件已存在，则尝试读取同名工作表的内容
+        if os.path.exists(excel_file_path):
+            with pd.ExcelFile(excel_file_path) as xls:
+                if sheet_name in xls.sheet_names:
+                    # 读取同名工作表的内容到 DataFrame
+                    existing_df = pd.read_excel(xls, sheet_name)
+                    # 将 CSV 文件的内容添加到同名工作表的下方
+                    new_df = pd.concat([existing_df, df], ignore_index=True)
+                    # 写入 Excel 文件
+                    with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a',if_sheet_exists='replace') as writer:
+                        new_df.to_excel(writer, sheet_name=sheet_name, index=False)
+                    continue  # 继续下一个 CSV 文件
+
+        # 如果不存在同名工作表，则直接将 DataFrame 写入到 Excel 文件的对应工作表中
+        # with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
+        #     df.to_excel(writer, sheet_name=sheet_name, index=False, startrow=1)
 
     print("CSV 文件已成功复制到 Excel 文件的对应工作表中")
 
