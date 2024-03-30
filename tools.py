@@ -80,37 +80,37 @@ def processXlsx_ShuiHouHuiKuan(workbook,unit):
 
 
 
-def processXlsx_ZhiXiaoYingShouQueBao(workbook,unit):
-    if "24年业绩预测-机构" in workbook.sheetnames:
-        worksheet_24 = workbook["24年业绩预测-机构"]
-        # 获取收款明细表中M列的求和
-        sum_M_column = 0
-        if "应收及分销预测汇总" in workbook.sheetnames:
-            worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row in worksheet_receipt.iter_rows(min_row=2, min_col=11, max_col=13, values_only=True):
-                receipt_date_str = row[0]  # K列，收款时间字符串
-                receipt_amount = row[2]  # M列，收款金额
-                try:
-                    receipt_date = datetime.datetime.strptime(receipt_date_str, "%Y-%m-%d")
-                    if receipt_date >= datetime.datetime(2024, 1, 1):
-                        if isinstance(receipt_amount, str):  # 如果值是字符串类型
-                            # 删除逗号并尝试将字符串转换为浮点数
-                            try:
-                                cleaned_value = receipt_amount.replace(',', '')
-                                # 如果字符串包含负号，我们在转换之前将其删除
-                                if '-' in cleaned_value:
-                                    cleaned_value = cleaned_value.replace('-', '')
-                                    sum_M_column -= float(cleaned_value)
-                                else:
-                                    sum_M_column += float(cleaned_value)
-                            except ValueError as e:
-                                # 如果无法转换为浮点数，则打印错误消息并继续下一个值
-                                print(f"数值错误：{e}")
-                        elif isinstance(receipt_amount, (int, float)):  # 如果值是数值类型
-                            sum_M_column += receipt_amount
-                except ValueError as e:
-                    print(f"日期解析错误：{e}")
-        # 在D4单元格填充求和值
-        sum_M_column = sum_M_column / 10000.0
-        worksheet_24[unit] = sum_M_column
-    return workbook
+# def processXlsx_ZhiXiaoYingShouQueBao(workbook,unit):
+#     if "24年业绩预测-机构" in workbook.sheetnames:
+#         worksheet_24 = workbook["24年业绩预测-机构"]
+#         # 获取收款明细表中M列的求和
+#         sum_M_column = 0
+#         if "应收及分销预测汇总" in workbook.sheetnames:
+#             worksheet_receipt = workbook["应收及分销预测汇总"]
+#             for row in worksheet_receipt.iter_rows(min_row=2, min_col=11, max_col=13, values_only=True):
+#                 receipt_date_str = row[0]  # K列，收款时间字符串
+#                 receipt_amount = row[2]  # M列，收款金额
+#                 try:
+#                     receipt_date = datetime.datetime.strptime(receipt_date_str, "%Y-%m-%d")
+#                     if receipt_date >= datetime.datetime(2024, 1, 1):
+#                         if isinstance(receipt_amount, str):  # 如果值是字符串类型
+#                             # 删除逗号并尝试将字符串转换为浮点数
+#                             try:
+#                                 cleaned_value = receipt_amount.replace(',', '')
+#                                 # 如果字符串包含负号，我们在转换之前将其删除
+#                                 if '-' in cleaned_value:
+#                                     cleaned_value = cleaned_value.replace('-', '')
+#                                     sum_M_column -= float(cleaned_value)
+#                                 else:
+#                                     sum_M_column += float(cleaned_value)
+#                             except ValueError as e:
+#                                 # 如果无法转换为浮点数，则打印错误消息并继续下一个值
+#                                 print(f"数值错误：{e}")
+#                         elif isinstance(receipt_amount, (int, float)):  # 如果值是数值类型
+#                             sum_M_column += receipt_amount
+#                 except ValueError as e:
+#                     print(f"日期解析错误：{e}")
+#         # 在D4单元格填充求和值
+#         sum_M_column = sum_M_column / 10000.0
+#         worksheet_24[unit] = sum_M_column
+#     return workbook

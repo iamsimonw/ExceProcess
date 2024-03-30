@@ -17,9 +17,9 @@ if __name__ == "__main__":
     # 目标Excel文件的路径
 
     
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename0,excel_file)
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename1,excel_file)
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename2,excel_file)
+    tools.copyCSVtoXlsx(csv_directory,csv_filename0,excel_file)
+    tools.copyCSVtoXlsx(csv_directory,csv_filename1,excel_file)
+    tools.copyCSVtoXlsx(csv_directory,csv_filename2,excel_file)
     
     
     # 创建或加载Excel工作簿
