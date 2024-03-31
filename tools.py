@@ -3,6 +3,25 @@ import openpyxl
 import csv
 import datetime
 
+# 定义字母和数字的映射表
+letter_to_number = {
+    'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4,
+    'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9,
+    'K': 10, 'L': 11, 'M': 12, 'N': 13, 'O': 14,
+    'P': 15, 'Q': 16, 'R': 17, 'S': 18, 'T': 19,
+    'U': 20, 'V': 21, 'W': 22, 'X': 23, 'Y': 24,
+    'Z': 25, 'AA': 26,'AB': 27,'AC': 28,'AD': 29,
+    'AE': 30,'AF': 31,'AG': 32,'AH': 33,'AI': 34,
+    'AJ': 35,'AK': 36,
+}
+
+# 反转字母和数字的映射表，以便进行数字到字母的转换
+number_to_letter = {v: k for k, v in letter_to_number.items()}
+# 测试映射表
+# print(letter_to_number['A'])  # 输出: 0
+# print(number_to_letter[0])    # 输出: 'A'
+
+
 def copyCSVtoXlsx(csv_directory,csv_filename,excel_file):
     csv_file = os.path.join(csv_directory, csv_filename)
     excel_file = os.path.join(csv_directory, excel_file)
@@ -69,14 +88,15 @@ def processXlsx_ShuiHouHuiKuan(workbook, unit, dateStart, dateEnd,ratio,product_
         worksheet_24 = workbook["24年业绩预测-机构"]
         # 获取收款明细表中M列的求和
         sum_column = 0
+        
         if "收款明细表" in workbook.sheetnames:
             worksheet_receipt = workbook["收款明细表"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=11, max_col=13, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_date_str = row[0]  # K列，收款时间字符串
-                receipt_amount = row[2]  # M列，收款金额
+                receipt_date_str = row[letter_to_number['K']]  # K列，收款时间字符串
+                receipt_amount = row[letter_to_number['M']]  # M列，收款金额
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end:
@@ -113,14 +133,14 @@ def processXlsx_ZhiXiaoYingShouQueBao(workbook, unit, dateStart, dateEnd,ratio,p
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[7]  # Q列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['Q']]  # Q列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '直销' and receipt_is_amount == '未回款':
@@ -157,14 +177,14 @@ def processXlsx_FenXiaoYingShouQueBao(workbook, unit, dateStart, dateEnd,ratio,p
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[7]  # Q列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['Q']]  # Q列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '分销' and receipt_is_amount == '未回款':
@@ -201,12 +221,12 @@ def processXlsx_XinQianQueBao(workbook, unit, dateStart, dateEnd,ratio,product_n
         sum_column = 0
         if "项目漏斗汇总-签约金额替重" in workbook.sheetnames:
             worksheet_receipt = workbook["项目漏斗汇总-签约金额替重"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=24, max_col=25, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_date_str = row[0]  # X列，日期
-                receipt_amount = row[1]  # Y列，回款
+                receipt_date_str = row[letter_to_number['X']]  # X列，日期
+                receipt_amount = row[letter_to_number['Y']]  # Y列，回款
 
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
@@ -244,14 +264,14 @@ def processXlsx_ZhiXiaoYingShouChongCi(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[8]  # R列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['R']]  # R列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '直销' and receipt_is_amount == '未回款':
@@ -288,14 +308,14 @@ def processXlsx_FenXiaoYingShouChongCi(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[8]  # R列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['R']]  # R列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '分销' and receipt_is_amount == '未回款':
@@ -332,12 +352,12 @@ def processXlsx_XinQianChongCi(workbook, unit, dateStart, dateEnd,ratio,product_
         sum_column = 0
         if "项目漏斗汇总-签约金额替重" in workbook.sheetnames:
             worksheet_receipt = workbook["项目漏斗汇总-签约金额替重"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=24, max_col=26, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_date_str = row[0]  # X列，日期
-                receipt_amount = row[2]  # Z列，回款
+                receipt_date_str = row[letter_to_number['X']]  # X列，日期
+                receipt_amount = row[letter_to_number['Z']]  # Z列，冲刺回款
 
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
@@ -376,13 +396,13 @@ def processXlsx_ShuiHouHuiKuan_ZhiXiao(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "收款明细表" in workbook.sheetnames:
             worksheet_receipt = workbook["收款明细表"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=9, max_col=13, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # I列，直销分销
-                receipt_date_str = row[2]  # K列，收款时间字符串
-                receipt_amount = row[4]  # M列，收款金额
+                receipt_sales = row[letter_to_number['I']]  # I列，直销分销
+                receipt_date_str = row[letter_to_number['K']]  # K列，收款时间字符串
+                receipt_amount = row[letter_to_number['M']]  # M列，收款金额
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales=='直销':
@@ -419,13 +439,13 @@ def processXlsx_ShuiHouHuiKuan_FenXiao(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "收款明细表" in workbook.sheetnames:
             worksheet_receipt = workbook["收款明细表"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=9, max_col=13, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # I列，直销分销
-                receipt_date_str = row[2]  # K列，收款时间字符串
-                receipt_amount = row[4]  # M列，收款金额
+                receipt_sales = row[letter_to_number['I']]  # I列，直销分销
+                receipt_date_str = row[letter_to_number['K']]  # K列，收款时间字符串
+                receipt_amount = row[letter_to_number['M']]  # M列，收款金额
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales=='分销':
@@ -462,13 +482,13 @@ def processXlsx_ShuiHouHuiKuan_DingYue(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "收款明细表" in workbook.sheetnames:
             worksheet_receipt = workbook["收款明细表"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=9, max_col=13, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_booking = row[1]  # J列，订阅与否
-                receipt_date_str = row[2]  # K列，收款时间字符串
-                receipt_amount = row[4]  # M列，收款金额
+                receipt_booking = row[letter_to_number['J']]  # J列，订阅与否
+                receipt_date_str = row[letter_to_number['K']]  # K列，收款时间字符串
+                receipt_amount = row[letter_to_number['M']]  # M列，收款金额
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and '非订阅' not in receipt_booking:
@@ -505,15 +525,15 @@ def processXlsx_ZhiXiaoYingShouQueBao_DingYue(workbook, unit, dateStart, dateEnd
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_booking = row[1]  # K列，订阅与否
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[7]  # Q列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_booking = row[letter_to_number['K']]  # K列，订阅与否
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['Q']]  # Q列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '直销' and receipt_is_amount == '未回款'and '非订阅' not in receipt_booking:
@@ -550,15 +570,15 @@ def processXlsx_FenXiaoYingShouQueBao_DingYue(workbook, unit, dateStart, dateEnd
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_booking = row[1]  # K列，订阅与否
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[7]  # Q列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_booking = row[letter_to_number['K']]  # K列，订阅与否
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['Q']]  # Q列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '分销' and receipt_is_amount == '未回款'and '非订阅' not in receipt_booking:
@@ -595,13 +615,13 @@ def processXlsx_XinQianQueBao_DingYue(workbook, unit, dateStart, dateEnd,ratio,p
         sum_column = 0
         if "项目漏斗汇总-签约金额替重" in workbook.sheetnames:
             worksheet_receipt = workbook["项目漏斗汇总-签约金额替重"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=23, max_col=25, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_booking = row[0]  # W列，订阅与否
-                receipt_date_str = row[1]  # X列，日期
-                receipt_amount = row[2]  # Y列，回款
+                receipt_booking = row[letter_to_number['W']]  # W列，订阅与否
+                receipt_date_str = row[letter_to_number['X']]  # X列，日期
+                receipt_amount = row[letter_to_number['Y']]  # Y列，回款
 
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
@@ -639,15 +659,15 @@ def processXlsx_ZhiXiaoYingShouChongCi_DingYue(workbook, unit, dateStart, dateEn
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_booking = row[1]  # K列，订阅与否
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[8]  # R列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_booking = row[letter_to_number['K']]  # K列，订阅与否
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['R']]  # R列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '直销' and receipt_is_amount == '未回款'and '非订阅' not in receipt_booking:
@@ -684,15 +704,15 @@ def processXlsx_FenXiaoYingShouChongCi_DingYue(workbook, unit, dateStart, dateEn
         sum_column = 0
         if "应收及分销预测汇总" in workbook.sheetnames:
             worksheet_receipt = workbook["应收及分销预测汇总"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=10, max_col=22, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_sales = row[0]  # J列，直销分销
-                receipt_booking = row[1]  # K列，订阅与否
-                receipt_date_str = row[6]  # P列，日期
-                receipt_amount = row[8]  # R列，收款金额
-                receipt_is_amount = row[12]  # V列，是否未回款
+                receipt_sales = row[letter_to_number['J']]  # J列，直销分销
+                receipt_booking = row[letter_to_number['K']]  # K列，订阅与否
+                receipt_date_str = row[letter_to_number['P']]  # P列，日期
+                receipt_amount = row[letter_to_number['R']]  # R列，收款金额
+                receipt_is_amount = row[letter_to_number['V']]  # V列，是否未回款
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
                     if receipt_date_start <= receipt_date <= receipt_date_end and receipt_sales == '分销' and receipt_is_amount == '未回款'and '非订阅' not in receipt_booking:
@@ -729,13 +749,13 @@ def processXlsx_XinQianChongCi_DingYue(workbook, unit, dateStart, dateEnd,ratio,
         sum_column = 0
         if "项目漏斗汇总-签约金额替重" in workbook.sheetnames:
             worksheet_receipt = workbook["项目漏斗汇总-签约金额替重"]
-            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=23, max_col=26, values_only=True), start=2):
+            for row_idx, row in enumerate(worksheet_receipt.iter_rows(min_row=2, min_col=letter_to_number['A'], max_col=letter_to_number['AF'], values_only=True), start=2):
                 # 检查是否为空行
                 if not any(row):
                     continue
-                receipt_booking = row[0]  # W列，订阅与否
-                receipt_date_str = row[1]  # X列，日期
-                receipt_amount = row[3]  # Z列，回款
+                receipt_booking = row[letter_to_number['W']]  # W列，订阅与否
+                receipt_date_str = row[letter_to_number['X']]  # X列，日期
+                receipt_amount = row[letter_to_number['Z']]  # Z列，冲刺回款
 
                 try:
                     receipt_date = parse_datetime(receipt_date_str, row_idx=row_idx)
