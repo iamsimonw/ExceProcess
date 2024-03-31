@@ -4,54 +4,45 @@ import tools
 
 
 
-
-if __name__ == "__main__":
-    # 固定的CSV文件目录
-    csv_directory = r"D:\JB\表(1)\原始表"
-    excel_file = "浙南temp.xlsx"
-    excel_file_full = os.path.join(csv_directory, excel_file)
-    # 三个CSV文件的文件名
-    csv_filename0 ="应收及分销预测汇总.csv"
-    csv_filename1 ="项目漏斗汇总-签约金额替重.csv"
-    csv_filename2 ="收款明细表.csv"
-    quarter_start = "20240401"
-    quarter_end = "20240701"
-    year_start="20240101"
-    year_end="20241231"
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename0,excel_file)
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename1,excel_file)
-    # tools.copyCSVtoXlsx(csv_directory,csv_filename2,excel_file)
-    ratio_all=1.1
-    ratio_ZhiXiao=1.11
-    ratio_FenXiao=1.13
-    
-    # 创建或加载Excel工作簿
-    if os.path.exists(excel_file_full):
-        workbook = openpyxl.load_workbook(excel_file_full)
-    else:
-        workbook = openpyxl.Workbook()
-    '''
-    当季整体
-    '''
-    #税后回款
-    workbook = tools.processXlsx_ShuiHouHuiKuan(workbook,"D11",quarter_start,quarter_end,ratio_all)
-    #直销应收确保
-    workbook = tools.processXlsx_ZhiXiaoYingShouQueBao(workbook,"F11",quarter_start,quarter_end,ratio_all)
-    #分销应收确保
-    workbook = tools.processXlsx_FenXiaoYingShouQueBao(workbook,"G11",quarter_start,quarter_end,ratio_all)
-    #新签确保
-    workbook = tools.processXlsx_XinQianQueBao(workbook,"H11",quarter_start,quarter_end,ratio_all)
-    #直销应收冲刺
-    workbook = tools.processXlsx_ZhiXiaoYingShouChongCi(workbook,"J11",quarter_start,quarter_end,ratio_all)
-    #分销应收冲刺
-    workbook = tools.processXlsx_FenXiaoYingShouChongCi(workbook,"K11",quarter_start,quarter_end,ratio_all)
-    #新签冲刺
-    workbook = tools.processXlsx_XinQianChongCi(workbook,"L11",quarter_start,quarter_end,ratio_all)
-    '''
-    当季直销
-    '''
-    workbook = tools.processXlsx_ShuiHouHuiKuan_ZhiXiao(workbook,"U11",quarter_start,quarter_end,ratio_all)
+def All_Process(workbook,cell_number,time_start,time_end,ratio_all,ratio_FenXiao,ratio_ZhiXiao,ratio_DingYue,product_name='Full'):
+    if product_name=='Full':
+        '''
+        整体
+        '''
+        #税后回款
+        workbook = tools.processXlsx_ShuiHouHuiKuan(workbook,f"D{cell_number}",time_start,time_end,ratio_all,product_name)
+        #直销应收确保
+        workbook = tools.processXlsx_ZhiXiaoYingShouQueBao(workbook,f"F{cell_number}",time_start,time_end,ratio_all,product_name)
+        #分销应收确保
+        workbook = tools.processXlsx_FenXiaoYingShouQueBao(workbook,f"G{cell_number}",time_start,time_end,ratio_all,product_name)
+        #新签确保
+        workbook = tools.processXlsx_XinQianQueBao(workbook,f"H{cell_number}",time_start,time_end,ratio_all,product_name)
+        #直销应收冲刺
+        workbook = tools.processXlsx_ZhiXiaoYingShouChongCi(workbook,f"J{cell_number}",time_start,time_end,ratio_all,product_name)
+        #分销应收冲刺
+        workbook = tools.processXlsx_FenXiaoYingShouChongCi(workbook,f"K{cell_number}",time_start,time_end,ratio_all,product_name)
+        #新签冲刺
+        workbook = tools.processXlsx_XinQianChongCi(workbook,f"L{cell_number}",time_start,time_end,ratio_all,product_name)
+        '''
+        直销
+        '''
+        workbook = tools.processXlsx_ShuiHouHuiKuan_ZhiXiao(workbook,f"U{cell_number}",time_start,time_end,ratio_ZhiXiao,product_name)
+        '''
+        分销
+        '''
+        workbook = tools.processXlsx_ShuiHouHuiKuan_FenXiao(workbook,f"AF{cell_number}",time_start,time_end,ratio_FenXiao,product_name)
+        '''
+        订阅
+        '''
+        workbook = tools.processXlsx_ShuiHouHuiKuan_DingYue(workbook,f"AO{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_ZhiXiaoYingShouQueBao_DingYue(workbook,f"AQ{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_FenXiaoYingShouQueBao_DingYue(workbook,f"AR{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_XinQianQueBao_DingYue(workbook,f"AS{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_ZhiXiaoYingShouChongCi_DingYue(workbook,f"AU{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_FenXiaoYingShouChongCi_DingYue(workbook,f"AV{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+        workbook = tools.processXlsx_XinQianChongCi_DingYue(workbook,f"AW{cell_number}",time_start,time_end,ratio_DingYue,product_name)
+    elif product_name=='YS':
+        1
     
     
-    
-    workbook.save(excel_file_full)
+    return workbook
